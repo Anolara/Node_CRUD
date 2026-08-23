@@ -9,7 +9,7 @@ const listarUsuarios = async (req, res) => {
 const criarUsuario = async (req, res) => {
   try {
     const { name, email } = req.body;
-    const novoUsuario = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
@@ -17,7 +17,8 @@ const criarUsuario = async (req, res) => {
     });
     res.status(201).json({
       message: "Usuario criado com sucesso.",
-      user: novoUsuario.name,
+      user: user.name,
+      email: user.email,
     });
   } catch (err) {
     return res.status(400).json({
@@ -56,11 +57,38 @@ const deletarUsuario = async (req, res) => {
         id,
       },
     });
-    return res.status(200).json({ message: "Usuário deletado com sucesso." });
+    return res.status(200).json({
+      message: "Usuário deletado com sucesso.",
+      user: user.name,
+      email: user.email,
+    });
   } catch (err) {
     return res.status(404).json({
       message: "Usuário não encontrado.",
     });
+  }
+};
+
+const atualizarUsuario = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { name, email } = req.body;
+    const user = await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        email,
+      },
+    });
+    return res.status(200).json({
+      message: "Usuário atualizado com sucesso.",
+      user: user.name,
+      email: user.email,
+    });
+  } catch (err) {
+    return res.status(400).json({ message: "Erro ao atualizar usuário." });
   }
 };
 
@@ -69,4 +97,5 @@ export default {
   criarUsuario,
   encontrarUsuario,
   deletarUsuario,
+  atualizarUsuario,
 };

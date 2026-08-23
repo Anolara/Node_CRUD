@@ -6,7 +6,7 @@ const listarUsuarios = async (req, res) => {
   res.json(users);
 };
 
-const criarUsuario = async (req, res) => {
+const criarUsuario = async (req, res, next) => {
   try {
     const { name, email } = req.body;
     const user = await prisma.user.create({
@@ -21,13 +21,11 @@ const criarUsuario = async (req, res) => {
       email: user.email,
     });
   } catch (err) {
-    return res.status(400).json({
-      message: "Erro ao criar usuário.",
-    });
+    next(err);
   }
 };
 
-const encontrarUsuario = async (req, res) => {
+const encontrarUsuario = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const user = await prisma.user.findUnique({
@@ -36,20 +34,18 @@ const encontrarUsuario = async (req, res) => {
       },
     });
 
-    if (user === null) {
+    if (!user) {
       return res.status(404).json({
         message: "Usuário não encotrado.",
       });
     }
     return res.json(user);
   } catch (err) {
-    return res.status(500).json({
-      message: "Erro interno.",
-    });
+    next(err);
   }
 };
 
-const deletarUsuario = async (req, res) => {
+const deletarUsuario = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const user = await prisma.user.delete({
@@ -63,13 +59,11 @@ const deletarUsuario = async (req, res) => {
       email: user.email,
     });
   } catch (err) {
-    return res.status(404).json({
-      message: "Usuário não encontrado.",
-    });
+    next(err);
   }
 };
 
-const atualizarUsuario = async (req, res) => {
+const atualizarUsuario = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { name, email } = req.body;
@@ -77,10 +71,7 @@ const atualizarUsuario = async (req, res) => {
       where: {
         id,
       },
-      data: {
-        name,
-        email,
-      },
+      data: req.body,
     });
     return res.status(200).json({
       message: "Usuário atualizado com sucesso.",
@@ -88,7 +79,7 @@ const atualizarUsuario = async (req, res) => {
       email: user.email,
     });
   } catch (err) {
-    return res.status(400).json({ message: "Erro ao atualizar usuário." });
+    next(err);
   }
 };
 

@@ -1,58 +1,41 @@
-let users = [
-  {
-    id: 1,
-    name: "Paulo",
-    email: "paulo@paulo.com",
-  },
-  {
-    id: 2,
-    name: "Bruna",
-    email: "bruna@bruna.com",
-  },
-];
+import prisma from "../lib/prisma.js";
 
-const listarUsuarios = (req, res) => {
+const listarUsuarios = async (req, res) => {
+  const users = await prisma.user.findMany();
+
   res.json(users);
 };
 
-const criarUsuario = (req, res) => {
+const criarUsuario = async (req, res) => {
   const { name, email } = req.body;
 
-  const novoUsuario = {
-    id: users.length + 1,
-    name,
-    email,
-  };
-
-  users.push(novoUsuario);
-
-  res.status(201).json(novoUsuario);
+  const novoUsuario = await prisma.user.create({
+    data: {
+      name,
+      email,
+    },
+  });
+  res.status(201).json("Usuario criado com sucesso.");
 };
 
-const buscarUsuario = (req, res) => {
+const encontrarUsuario = async (req, res) => {
   const id = Number(req.params.id);
-  const usuario = users.find((user) => user.id == id);
 
-  if (!usuario) {
-    res.status(404).json({ message: "Usuario nao encontrado." });
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (user == null) {
+    return res.status(404).json({
+      message: "Usuário não encotrado.",
+    });
   }
-  res.json(usuario);
+  return res.json(user);
 };
 
-const deletarUsuario = (req, res) => {
-  const id = Number(req.params.id);
-  const usuario = users.find((user) => user.id == id);
-
-  if (!usuario) {
-    res.status(404).json({ message: "Usuario nao encontrado." });
-  }
-  users = users.filter((user) => user.id != id);
-  res.json({ message: "Usuario apagado." });
-};
-
-module.exports = {
+export default {
   listarUsuarios,
   criarUsuario,
-  buscarUsuario,
-  deletarUsuario,
+  encontrarUsuario,
 };

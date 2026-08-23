@@ -1,6 +1,6 @@
-const express = require("express");
+import express from "express";
 
-const userRoutes = require("./routes/userRoutes.js");
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -14,4 +14,4 @@ app.get("/", (req, res) => {
 
 app.use("/users", userRoutes);
 
-module.exports = app;
+export default app;

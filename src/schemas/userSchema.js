@@ -8,6 +8,14 @@ const userSchema = z
   })
   .strict();
 
-const userPatchSchema = userSchema.partial();
+const userPatchSchema = userSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Informe pelo menos um campo para atualizar",
+  });
 
-export { userSchema, userPatchSchema };
+const idSchema = z.object({
+  id: z.coerce.number().int().positive(),
+});
+
+export { userSchema, userPatchSchema, idSchema };

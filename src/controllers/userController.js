@@ -65,11 +65,9 @@ const deletarUsuario = async (req, res, next) => {
 
 const atualizarUsuario = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    const { name, email } = req.body;
     const user = await prisma.user.update({
       where: {
-        id,
+        id: req.params.id,
       },
       data: req.body,
     });

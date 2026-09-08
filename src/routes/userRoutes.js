@@ -10,11 +10,7 @@ import {
 const router = express.Router();
 
 router.get("/", userController.listarUsuarios);
-router.get(
-  "/:id",
-  validate(idSchema, "params"),
-  userController.encontrarUsuario,
-);
+router.get("/:id", validate(idSchema, "params"), userController.buscarUsuario);
 router.post("/", validate(userSchema), userController.criarUsuario);
 router.delete(
   "/:id",

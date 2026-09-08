@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import AppError from "../errors/appError.js";
 
 const errorHandler = (error, req, res, next) => {
   console.error(error);
@@ -24,7 +25,13 @@ const errorHandler = (error, req, res, next) => {
     }
   }
 
-  res.status(500).json({
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).json({
+      mensagem: error.message,
+    });
+  }
+
+  return res.status(500).json({
     mensagem: "Erro interno do servidor",
   });
 };
